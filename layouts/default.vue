@@ -95,7 +95,7 @@ function checkRouteUpdateLayout() {
               <span class="sr-only">Github</span>
               <img class="h-8 w-8 my-[16px] rounded-full"
                    src="~/public/github.svg"
-                   alt=""/>
+                   alt="Github"/>
             </NuxtLink>
           </div>
         </div>
@@ -128,7 +128,7 @@ function checkRouteUpdateLayout() {
       </DisclosurePanel>
     </Disclosure>
 
-    <div class="my-4 mx-4 sm:my-5 sm:mx-5 md:my-8 md:mx-8 lg:my-12 lg:mx-12">
+    <div class="mt-4 mx-4 sm:mt-5 sm:mx-5 md:mt-8 md:mx-8 lg:mt-12 lg:mx-12 pb-4 sm:pb-5 md:pb-8 lg:pb-12">
       <NuxtPage/>
     </div>
 
