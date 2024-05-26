@@ -38,7 +38,7 @@ const credits = [
   </div>
 
 
-  <h2 class="text-2xl text-gray-900 mt-10 mb-2">Credits</h2>
+  <h2 class="text-2xl text-gray-900 mt-10 mb-2">Contributors</h2>
 <!--  <p class="text-base mt-10 mb-6">And of course all our contributors.</p>-->
 
   <a href="https://github.com/m-mattia-m/auth-playground/graphs/contributors">

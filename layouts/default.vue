@@ -1,7 +1,6 @@
 <script setup>
 import {Disclosure, DisclosureButton, DisclosurePanel} from '@headlessui/vue'
 import {Bars3Icon, XMarkIcon} from '@heroicons/vue/24/outline'
-// import Dropbox from "public/storage-providers/dropbox.svg";
 
 const route = useRoute()
 
@@ -20,7 +19,6 @@ watch(() => route.path, () => {
 
 onBeforeMount(() => {
   checkRouteUpdateLayout()
-  console.log(navActivation.value)
 })
 
 function setNavActivationToFalse() {
@@ -46,7 +44,7 @@ function checkRouteUpdateLayout() {
 <template>
   <template v-if="navActivation.finishedInitLoad">
     <Disclosure as="nav" class="bg-white shadow" v-slot="{ open }">
-      <div class="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
+      <div class="max-w-8xl px-2 sm:px-2 lg:px-6">
         <div class="relative flex h-16 justify-between">
           <div class="absolute inset-y-0 left-0 flex items-center sm:hidden">
             <!-- Mobile menu button -->
@@ -89,8 +87,8 @@ function checkRouteUpdateLayout() {
           </div>
 
           <div class="relative ml-3">
-            <NuxtLink to=""
-                class="relative flex rounded-full bg-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+            <NuxtLink to="https://github.com/m-mattia-m/auth-playground" external="external" target="_blank"
+                class="relative flex rounded-full bg-white text-sm">
               <span class="absolute -inset-1.5"/>
               <span class="sr-only">Github</span>
               <img class="h-8 w-8 my-[16px] rounded-full"
@@ -128,7 +126,7 @@ function checkRouteUpdateLayout() {
       </DisclosurePanel>
     </Disclosure>
 
-    <div class="mt-4 mx-4 sm:mt-5 sm:mx-5 md:mt-8 md:mx-8 lg:mt-12 lg:mx-12 pb-4 sm:pb-5 md:pb-8 lg:pb-12">
+    <div class="py-4 sm:py-6 md:py-8 lg:py-10 px-4 sm:px-6 md:px-8 lg:px-10">
       <NuxtPage/>
     </div>
 
