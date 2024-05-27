@@ -14,7 +14,6 @@ const navActivation = ref({
 
 watch(() => route.path, () => {
   checkRouteUpdateLayout()
-  console.log(navActivation.value)
 });
 
 onBeforeMount(() => {
