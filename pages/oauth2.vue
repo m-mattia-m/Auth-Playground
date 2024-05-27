@@ -4,19 +4,31 @@ import {Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot} from 
 import shortUuid from "short-uuid";
 
 // TODO: get endpoints, possible scopes, ... from .well-known/openid-configuration
+// TODO: add tabs for different authentication methods: PKCE, ...
 
+const route = useRoute()
 const localStorageKey = "auth-playground::oauth2"
 const request = ref({} as OAuthRequestElement)
 const openShelveDialog = ref(false)
 const openDataMigrationDialog = ref(false)
+const openResponseDialog = ref(false)
 const scopesString = ref("")
 const recentRequests = ref([] as OAuthRequestElement[])
 const dataMigrationTextarea = ref("")
+const responseCode = ref("")
 
 onMounted(() => {
   dataMigrationTextarea.value = JSON.stringify(loadLocalStorage())
   loadTableData()
+  fillResponseData()
 })
+
+async function sendRequest(): Promise<void> {
+  const queries = `?client_id=${request.value.clientId}&redirect_uri=${request.value.redirectUrl}&response_type=${request.value.responseType}&scope=${arrayToString(request.value.scopes)}&code_challenge=${request.value.codeChallenge}&code_challenge_method=${request.value.codeChallengeMethode}&`
+  const url = `${request.value.authorizeUrl}${encodeURI(queries)}`
+
+  await navigateTo(url, {external: true})
+}
 
 function addRequestToShelf() {
   if (!process.client) return
@@ -26,9 +38,14 @@ function addRequestToShelf() {
     id: shortUuid().generate(),
     title: request.value.title,
     description: request.value.description,
+    authorizeUrl: request.value.authorizeUrl,
     tokenUrl: request.value.tokenUrl,
+    redirectUrl: request.value.redirectUrl,
     clientId: request.value.clientId,
     clientSecret: request.value.clientSecret,
+    responseType: request.value.responseType,
+    codeChallenge: request.value.codeChallenge,
+    codeChallengeMethode: request.value.codeChallengeMethode,
     scopes: stringToArray(scopesString.value),
   }
 
@@ -60,10 +77,17 @@ function unshelveRequest(id: string): void {
   const elementIndex = storageData.findIndex(element => element.id === id)
 
   request.value = storageData[elementIndex]
-  console.log(storageData[elementIndex])
-  console.log(storageData[elementIndex].clientSecret)
   scopesString.value = arrayToString(storageData[elementIndex].scopes)
   loadTableData()
+}
+
+function fillResponseData(){
+  responseCode.value = route.query.code as string
+  openResponseDialog.value = true
+}
+
+function copyCodeToClipboard() {
+  navigator.clipboard.writeText(route.query.code as string)
 }
 
 function stringToArray(input: string): string[] {
@@ -73,9 +97,9 @@ function stringToArray(input: string): string[] {
 function arrayToString(input: string[]): string {
   let response: string = "";
   input.forEach((element) => {
-    response += `${element}, `
+    response += `${element} `
   })
-  return response?.substring(0, response.length - 2)
+  return response?.substring(0, response.length - 1)
 }
 
 function loadLocalStorage(): OAuthRequestElement[] {
@@ -104,10 +128,16 @@ interface OAuthRequestElement {
   id: string,
   title: string,
   description: string,
+  authorizeUrl: string,
   tokenUrl: string,
+  redirectUrl: string,
   clientId: string,
   clientSecret: string,
+  responseType: string,
+  codeChallenge: string,
+  codeChallengeMethode: string,
   scopes: string[],
+  customQueries: string,
 }
 
 </script>
@@ -118,6 +148,24 @@ interface OAuthRequestElement {
       <label for="token-url" class="block text-sm font-medium leading-6 text-gray-900">Token URL</label>
       <div class="mt-2">
         <input type="text" name="token-url" id="token-url" v-model="request.tokenUrl"
+               class="block w-full rounded-md border-0 py-1.5 px-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6"
+               placeholder="https://example.com/oauth/v2/token"/>
+      </div>
+    </div>
+
+    <div class="mt-6">
+      <label for="authorize-url" class="block text-sm font-medium leading-6 text-gray-900">Authorize URL</label>
+      <div class="mt-2">
+        <input type="text" name="authorize-url" id="authorize-url" v-model="request.authorizeUrl"
+               class="block w-full rounded-md border-0 py-1.5 px-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6"
+               placeholder="https://example.com/oauth/v2/authorize"/>
+      </div>
+    </div>
+
+    <div class="mt-6">
+      <label for="redirect-url" class="block text-sm font-medium leading-6 text-gray-900">Redirect URL</label>
+      <div class="mt-2">
+        <input type="text" name="redirect-url" id="redirect-url" v-model="request.redirectUrl"
                class="block w-full rounded-md border-0 py-1.5 px-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6"
                placeholder="https://example.com/oauth/v2/token"/>
       </div>
@@ -142,12 +190,40 @@ interface OAuthRequestElement {
     </div>
 
     <div class="mt-6">
+      <label for="response-type" class="block text-sm font-medium leading-6 text-gray-900">Response type</label>
+      <div class="mt-2">
+        <input type="text" name="response-type" id="response-type" v-model="request.responseType"
+               class="block w-full rounded-md border-0 py-1.5 px-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6"
+               placeholder="code"/>
+      </div>
+    </div>
+
+    <div class="mt-6">
+      <label for="code-challenge" class="block text-sm font-medium leading-6 text-gray-900">Code challenge</label>
+      <div class="mt-2">
+        <input type="text" name="code-challenge" id="code-challenge" v-model="request.codeChallenge"
+               class="block w-full rounded-md border-0 py-1.5 px-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6"
+               placeholder="code_verifier"/>
+      </div>
+    </div>
+
+    <div class="mt-6">
+      <label for="code-challenge-methode" class="block text-sm font-medium leading-6 text-gray-900">Code challenge methode</label>
+      <div class="mt-2">
+        <input type="text" name="code-challenge-methode" id="code-challenge-methode" v-model="request.codeChallengeMethode"
+               class="block w-full rounded-md border-0 py-1.5 px-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6"
+               placeholder="S256"/>
+      </div>
+    </div>
+
+    <div class="mt-6">
       <label for="scopes" class="block text-sm font-medium leading-6 text-gray-900">Scopes</label>
       <div class="mt-2">
         <input type="text" name="scopes" id="scopes" v-model="scopesString"
                class="block w-full rounded-md border-0 py-1.5 px-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6"
                placeholder="openid profile email roles"/>
       </div>
+      <p class="mt-2 text-sm text-gray-500" id="email-description">Split the scopes with a empty space.</p>
     </div>
 
     <div class="mt-6 flex flex-row justify-end">
@@ -167,7 +243,7 @@ interface OAuthRequestElement {
       </div>
 
       <div class="ml-4">
-        <button type="button"
+        <button type="button" @click="sendRequest()"
                 class="w-20 h-full rounded-md bg-indigo-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
           Send
         </button>
@@ -175,9 +251,10 @@ interface OAuthRequestElement {
     </div>
   </div>
 
+  <h2 class="mt-16 text-2xl text-gray-900 mb-2">Saved requests</h2>
   <div v-if="recentRequests.length > 0">
-    <div class="mt-40 px-4 sm:px-6 lg:px-8">
-      <div class="mt-8 flow-root">
+    <div class="px-4 sm:px-6 lg:px-8">
+      <div class="mt-4 flow-root">
         <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
           <div class="inline-block min-w-full py-2 align-middle">
             <table class="min-w-full divide-y divide-gray-300">
@@ -281,6 +358,7 @@ interface OAuthRequestElement {
       </Dialog>
     </TransitionRoot>
   </div>
+
   <div>
     <TransitionRoot as="template" :show="openDataMigrationDialog">
       <Dialog class="relative z-10" @close="openDataMigrationDialog = false">
@@ -301,14 +379,15 @@ interface OAuthRequestElement {
                 <div>
                   <div class="mt-3 sm:mt-5">
                     <DialogTitle as="h3" class="text-base font-semibold leading-6 text-gray-900">
-                      Save request to local storage
+                      Import or export data
                     </DialogTitle>
                     <div class="mt-2">
                       <p>Copy the value of this textarea to share or store your requests. Note that this content
                         contains visible secrets, and we <b>strongly recommend</b> that you don't share any secrets.</p>
                       <div class="mt-6">
                         <label for="description"
-                               class="block text-sm font-medium leading-6 text-gray-900">Data migration </label>
+                               class="block text-sm font-medium leading-6 text-gray-900">Your current saved
+                          requests</label>
                         <div class="mt-2">
                           <textarea rows="4" name="description" id="description" v-model="dataMigrationTextarea"
                                     class="block w-full rounded-md border-0 py-1.5 px-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6"/>
@@ -320,11 +399,62 @@ interface OAuthRequestElement {
                 <div class="mt-5 sm:mt-6 sm:grid sm:grid-flow-row-dense sm:grid-cols-2 sm:gap-3">
                   <button type="button"
                           class="inline-flex w-full justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 sm:col-start-2"
-                          @click="openDataMigrationDialog = false; overWriteData()">Overwrite
+                          @click="openDataMigrationDialog = false; overWriteData()">Import and overwrite
                   </button>
                   <button type="button"
                           class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:col-start-1 sm:mt-0"
                           @click="openDataMigrationDialog = false" ref="cancelButtonRef">Cancel
+                  </button>
+                </div>
+              </DialogPanel>
+            </TransitionChild>
+          </div>
+        </div>
+      </Dialog>
+    </TransitionRoot>
+  </div>
+
+  <div>
+    <TransitionRoot as="template" :show="openResponseDialog">
+      <Dialog class="relative z-10" @close="openResponseDialog = false">
+        <TransitionChild as="template" enter="ease-out duration-300" enter-from="opacity-0" enter-to="opacity-100"
+                         leave="ease-in duration-200" leave-from="opacity-100" leave-to="opacity-0">
+          <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"/>
+        </TransitionChild>
+
+        <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
+          <div class="flex min-h-full items-end justify-center p-4 sm:items-center sm:p-0">
+            <TransitionChild as="template" enter="ease-out duration-300"
+                             enter-from="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                             enter-to="opacity-100 translate-y-0 sm:scale-100" leave="ease-in duration-200"
+                             leave-from="opacity-100 translate-y-0 sm:scale-100"
+                             leave-to="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95">
+              <DialogPanel
+                  class="relative transform overflow-hidden rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6">
+                <div>
+                  <div class="mt-3 sm:mt-5">
+                    <DialogTitle as="h3" class="text-base font-semibold leading-6 text-gray-900">
+                      Response
+                    </DialogTitle>
+                    <div class="mt-2">
+                      <div class="mt-6">
+                        <label for="response-code" class="block text-sm font-medium leading-6 text-gray-900">Response Code</label>
+                        <div class="mt-2">
+                          <input type="text" name="response-code" id="response-code" v-model="responseCode"
+                                 class="block w-full rounded-md border-0 py-1.5 px-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6"/>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="mt-5 sm:mt-6 sm:grid sm:grid-flow-row-dense sm:grid-cols-2 sm:gap-3">
+                  <button type="button"
+                          class="inline-flex w-full justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 sm:col-start-2"
+                          @click="copyCodeToClipboard()">Copy code
+                  </button>
+                  <button type="button"
+                          class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:col-start-1 sm:mt-0"
+                          @click="openResponseDialog = false" ref="cancelButtonRef">Cancel
                   </button>
                 </div>
               </DialogPanel>
