@@ -5,6 +5,9 @@ import shortUuid from "short-uuid";
 
 // TODO: get endpoints, possible scopes, ... from .well-known/openid-configuration
 // TODO: add tabs for different authentication methods: PKCE, ...
+// TODO: add possibility to select which fields should be used for query parameters -> not every provider want the same queries
+// TODO: add token-url with username/password to generate token
+// TODO: improve user-experience in form (playground itself)
 
 const route = useRoute()
 const localStorageKey = "auth-playground::oauth2"
@@ -13,6 +16,7 @@ const openShelveDialog = ref(false)
 const openDataMigrationDialog = ref(false)
 const openResponseDialog = ref(false)
 const scopesString = ref("")
+const customAttributesString = ref("")
 const recentRequests = ref([] as OAuthRequestElement[])
 const dataMigrationTextarea = ref("")
 const responseCode = ref("")
@@ -24,29 +28,44 @@ onMounted(() => {
 })
 
 async function sendRequest(): Promise<void> {
-  const queries = `?client_id=${request.value.clientId}&redirect_uri=${request.value.redirectUrl}&response_type=${request.value.responseType}&scope=${arrayToString(request.value.scopes)}&code_challenge=${request.value.codeChallenge}&code_challenge_method=${request.value.codeChallengeMethode}&`
-  const url = `${request.value.authorizeUrl}${encodeURI(queries)}`
+  const clientId = request.value.clientId ? `&client_id=${encodeURIComponent(request.value.clientId)}` : "";
+  const redirectUri = request.value.redirectUri ? `&redirect_uri=${encodeURIComponent(request.value.redirectUri)}` : "";
+  const responseType = request.value.responseType ? `&response_type=${encodeURIComponent(request.value.responseType)}` : "";
+  const scope = scopesString.value ? `&scope=${encodeURIComponent(scopesString.value)}` : "";
+  const codeChallenge = request.value.codeChallenge ? `&code_challenge=${(request.value.codeChallenge)}` : "";
+  const codeChallengeMethod = request.value.codeChallengeMethode ? `&code_challenge_method=${encodeURIComponent(request.value.codeChallengeMethode)}` : "";
+
+  const customAttributesArray: string[] = []
+  customAttributesString.value.split(" ").forEach(element => {
+    if (element == undefined || element == "") return
+    const customAttributeElements : string[] = []
+    element.trim().split("=").forEach(attribute => customAttributeElements.push(attribute))
+    customAttributesArray.push(`&${customAttributeElements[0]}=${encodeURIComponent(customAttributeElements[1])}`)
+  })
+
+  let queries = `${clientId}${redirectUri}${responseType}${scope}${codeChallenge}${codeChallengeMethod}`
+  customAttributesArray.forEach(element => queries += element)
+  const url = `${request.value.authorizeUrl}?${queries.substring(1, queries.length)}`
 
   await navigateTo(url, {external: true})
 }
 
 function addRequestToShelf() {
   if (!process.client) return
-  console.log(shortUuid().generate())
 
   const requestToShelf: OAuthRequestElement = {
     id: shortUuid().generate(),
     title: request.value.title,
     description: request.value.description,
     authorizeUrl: request.value.authorizeUrl,
-    tokenUrl: request.value.tokenUrl,
-    redirectUrl: request.value.redirectUrl,
+    redirectUri: request.value.redirectUri,
     clientId: request.value.clientId,
     clientSecret: request.value.clientSecret,
     responseType: request.value.responseType,
     codeChallenge: request.value.codeChallenge,
     codeChallengeMethode: request.value.codeChallengeMethode,
     scopes: stringToArray(scopesString.value),
+    customAttributes: stringToArray(customAttributesString.value)
   }
 
   const storageData = loadLocalStorage()
@@ -78,12 +97,14 @@ function unshelveRequest(id: string): void {
 
   request.value = storageData[elementIndex]
   scopesString.value = arrayToString(storageData[elementIndex].scopes)
+  customAttributesString.value = arrayToString(storageData[elementIndex].customAttributes)
+
   loadTableData()
 }
 
-function fillResponseData(){
+function fillResponseData() {
   responseCode.value = route.query.code as string
-  openResponseDialog.value = true
+  if (responseCode.value != undefined && responseCode.value !== "") openResponseDialog.value = true
 }
 
 function copyCodeToClipboard() {
@@ -125,36 +146,32 @@ function setLocalStorage(updatedStorage: OAuthRequestElement[]): void {
 }
 
 interface OAuthRequestElement {
+  // metadata
   id: string,
   title: string,
   description: string,
+  // required attributes for oauth2.0 process
   authorizeUrl: string,
-  tokenUrl: string,
-  redirectUrl: string,
   clientId: string,
-  clientSecret: string,
   responseType: string,
+  // optional widespread attributes
+  redirectUri: string,
+  clientSecret: string,
   codeChallenge: string,
   codeChallengeMethode: string,
   scopes: string[],
-  customQueries: string,
+  customAttributes: string[],
 }
 
 </script>
 
 <template>
   <div>
-    <div class="mt-6">
-      <label for="token-url" class="block text-sm font-medium leading-6 text-gray-900">Token URL</label>
-      <div class="mt-2">
-        <input type="text" name="token-url" id="token-url" v-model="request.tokenUrl"
-               class="block w-full rounded-md border-0 py-1.5 px-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6"
-               placeholder="https://example.com/oauth/v2/token"/>
-      </div>
-    </div>
+
+    <h1 class="text-4xl text-gray-900 mb-2">URL generation</h1>
 
     <div class="mt-6">
-      <label for="authorize-url" class="block text-sm font-medium leading-6 text-gray-900">Authorize URL</label>
+      <label for="authorize-url" class="block text-sm font-medium leading-6 text-gray-900">Authorize URL <i class="font-light text-red-600">(required)</i></label>
       <div class="mt-2">
         <input type="text" name="authorize-url" id="authorize-url" v-model="request.authorizeUrl"
                class="block w-full rounded-md border-0 py-1.5 px-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6"
@@ -163,16 +180,16 @@ interface OAuthRequestElement {
     </div>
 
     <div class="mt-6">
-      <label for="redirect-url" class="block text-sm font-medium leading-6 text-gray-900">Redirect URL</label>
+      <label for="redirect-url" class="block text-sm font-medium leading-6 text-gray-900">Redirect URL <i class="font-light text-red-600">(required)</i></label>
       <div class="mt-2">
-        <input type="text" name="redirect-url" id="redirect-url" v-model="request.redirectUrl"
+        <input type="text" name="redirect-url" id="redirect-url" v-model="request.redirectUri"
                class="block w-full rounded-md border-0 py-1.5 px-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6"
-               placeholder="https://example.com/oauth/v2/token"/>
+               placeholder="https://auth-playground.makefermion.com/oauth2"/>
       </div>
     </div>
 
     <div class="mt-6">
-      <label for="client-id" class="block text-sm font-medium leading-6 text-gray-900">Client-ID</label>
+      <label for="client-id" class="block text-sm font-medium leading-6 text-gray-900">Client-ID <i class="font-light text-red-600">(required)</i></label>
       <div class="mt-2">
         <input type="text" name="client-id" id="client-id" v-model="request.clientId"
                class="block w-full rounded-md border-0 py-1.5 px-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6"
@@ -208,9 +225,11 @@ interface OAuthRequestElement {
     </div>
 
     <div class="mt-6">
-      <label for="code-challenge-methode" class="block text-sm font-medium leading-6 text-gray-900">Code challenge methode</label>
+      <label for="code-challenge-methode" class="block text-sm font-medium leading-6 text-gray-900">Code challenge
+        methode</label>
       <div class="mt-2">
-        <input type="text" name="code-challenge-methode" id="code-challenge-methode" v-model="request.codeChallengeMethode"
+        <input type="text" name="code-challenge-methode" id="code-challenge-methode"
+               v-model="request.codeChallengeMethode"
                class="block w-full rounded-md border-0 py-1.5 px-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6"
                placeholder="S256"/>
       </div>
@@ -224,6 +243,16 @@ interface OAuthRequestElement {
                placeholder="openid profile email roles"/>
       </div>
       <p class="mt-2 text-sm text-gray-500" id="email-description">Split the scopes with a empty space.</p>
+    </div>
+
+    <div class="mt-6">
+      <label for="custom-attributes" class="block text-sm font-medium leading-6 text-gray-900">Custom attributes</label>
+      <div class="mt-2">
+        <input type="text" name="custom-attributes" id="custom-attributes" v-model="customAttributesString"
+               class="block w-full rounded-md border-0 py-1.5 px-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6"
+               placeholder="owner=me hello=world"/>
+      </div>
+      <p class="mt-2 text-sm text-gray-500" id="email-description">Split the custom attributes with a empty space.</p>
     </div>
 
     <div class="mt-6 flex flex-row justify-end">
@@ -438,7 +467,8 @@ interface OAuthRequestElement {
                     </DialogTitle>
                     <div class="mt-2">
                       <div class="mt-6">
-                        <label for="response-code" class="block text-sm font-medium leading-6 text-gray-900">Response Code</label>
+                        <label for="response-code" class="block text-sm font-medium leading-6 text-gray-900">Response
+                          Code</label>
                         <div class="mt-2">
                           <input type="text" name="response-code" id="response-code" v-model="responseCode"
                                  class="block w-full rounded-md border-0 py-1.5 px-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6"/>
