@@ -1,0 +1,33 @@
+name: Generate and publish
+
+on:
+  release:
+    types:
+      - created
+
+env:
+  REPOSITORY_NAME: auth-playground
+  GH_USERNAME: m-mattia-m
+  DOMAIN: auth-playground.makefermion.com
+
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Clean-install npm dependencies
+        run: npm ci
+      - name: Generate nuxt files
+        run: npm run generate
+      - name: Publish
+        run: npm run deploy
+      - name: Update GitHub Pages settings
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DOMAIN: 'auth-playground.'
+        run: |
+          curl -X PATCH \
+            -H "Authorization: token $GITHUB_TOKEN" \
+            -H "Accept: application/vnd.github.v3+json" \
+            https://api.github.com/repos/$REPOSITORY_NAME \
+            -d '{"name": "'$REPOSITORY_NAME'", "has_pages": true, "pages": {"cname": "'$DOMAIN'"}}'
