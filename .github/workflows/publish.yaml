@@ -24,7 +24,6 @@ jobs:
       - name: Update GitHub Pages settings
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          DOMAIN: 'auth-playground.'
         run: |
           curl -X PATCH \
             -H "Authorization: token $GITHUB_TOKEN" \
