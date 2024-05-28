@@ -31,9 +31,9 @@ function checkRouteUpdateLayout() {
 
   navActivation.value.finishedInitLoad = true
 
-  if (route.path.startsWith("/oauth2")) return navActivation.value.oauth2 = true
-  if (route.path.startsWith("/oidc")) return navActivation.value.oidc = true
-  if (route.path.startsWith("/about")) return navActivation.value.about = true
+  if (route.path?.startsWith("/oauth2")) return navActivation.value.oauth2 = true
+  if (route.path?.startsWith("/oidc")) return navActivation.value.oidc = true
+  if (route.path?.startsWith("/about")) return navActivation.value.about = true
 
   navActivation.value.home = true
 }
