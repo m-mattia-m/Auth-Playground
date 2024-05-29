@@ -27,13 +27,14 @@ function setNavActivationToFalse() {
 }
 
 function checkRouteUpdateLayout() {
-  setNavActivationToFalse()
+  if (!process.client) return
 
+  setNavActivationToFalse()
   navActivation.value.finishedInitLoad = true
 
-  if (route.path?.startsWith("/oauth2")) return navActivation.value.oauth2 = true
-  if (route.path?.startsWith("/oidc")) return navActivation.value.oidc = true
-  if (route.path?.startsWith("/about")) return navActivation.value.about = true
+  if (route.path.startsWith("/oauth2")) return navActivation.value.oauth2 = true
+  if (route.path.startsWith("/oidc")) return navActivation.value.oidc = true
+  if (route.path.startsWith("/about")) return navActivation.value.about = true
 
   navActivation.value.home = true
 }
@@ -41,8 +42,7 @@ function checkRouteUpdateLayout() {
 </script>
 
 <template>
-  <template v-if="navActivation.finishedInitLoad">
-    <Disclosure as="nav" class="bg-white shadow" v-slot="{ open }">
+    <Disclosure as="nav" class="bg-white shadow" v-slot="{ open }" v-if="navActivation.finishedInitLoad">
       <div class="max-w-8xl px-2 sm:px-2 lg:px-6">
         <div class="relative flex h-16 justify-between">
           <div class="absolute inset-y-0 left-0 flex items-center sm:hidden">
@@ -128,9 +128,6 @@ function checkRouteUpdateLayout() {
     <div class="py-4 sm:py-6 md:py-8 lg:py-10 px-4 sm:px-6 md:px-8 lg:px-10">
       <NuxtPage/>
     </div>
-
-
-  </template>
 </template>
 
 <style scoped>

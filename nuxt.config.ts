@@ -15,5 +15,10 @@ export default defineNuxtConfig({
   },
   devtools: { enabled: true },
   modules: ['@nuxtjs/tailwindcss'],
-  ssr: true,
+  routeRules: {
+    '/': {ssr: true},
+    '/oauth2': {ssr: false},
+    '/oidc': {ssr: false},
+    '/about': {ssr: true},
+  }
 })
