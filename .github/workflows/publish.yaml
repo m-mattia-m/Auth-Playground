@@ -5,38 +5,12 @@ on:
     types:
       - created
 
-env:
-  TAG_NAME: ${{ github.event.release.tag_name }}
-  REPOSITORY_NAME: auth-playground
-  GH_USERNAME: m-mattia-m-machine
-  GH_EMAIL: gh@makefermion.com
-  DOMAIN: auth-playground.makefermion.com
-
 jobs:
   build-and-publish:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - name: Clean-install npm dependencies
-        run: npm ci
-      - name: Generate nuxt files
-        run: npm run generate
-#      - name: Add & Commit
-#        uses: EndBug/add-and-commit@v9.1.4
-      - name: Set git config
-        run: |
-          echo "Usernmae: $GH_USERNAME"
-          echo "Usernmae: $GH_EMAIL"
-          git config --global user.name '$GH_USERNAME'
-          git config --global user.email '$GH_EMAIL'
-      - name: Publish
-        run: npm run deploy
-      - name: Update GitHub Pages settings
-        env:
-          GH_MACHINE_TOKEN: ${{ secrets.GH_MACHINE_TOKEN }}
-        run: |
-          curl -X PATCH \
-            -H "Authorization: token GH_MACHINE_TOKEN" \
-            -H "Accept: application/vnd.github.v3+json" \
-            https://api.github.com/repos/$REPOSITORY_NAME \
-            -d '{"name": "'$REPOSITORY_NAME'", "has_pages": true, "pages": {"cname": "'$DOMAIN'"}}'
+      - name: Deploy
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GH_MACHINE_TOKEN }}
+          publish_dir: .output/public
