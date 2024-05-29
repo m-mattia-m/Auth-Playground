@@ -4,10 +4,6 @@ on:
   release:
     types:
       - created
-  push:
-    branches:
-      - main
-      - 'releases/**'
 
 env:
   DOMAIN: auth-playground.makefermion.com
