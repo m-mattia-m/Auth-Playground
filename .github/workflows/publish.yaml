@@ -5,12 +5,29 @@ on:
     types:
       - created
 
+env:
+  TAG_NAME: ${{ github.event.release.tag_name }}
+  REPOSITORY_NAME: auth-playground
+  GH_USERNAME: m-mattia-m-machine
+  GH_EMAIL: gh@makefermion.com
+  DOMAIN: auth-playground.makefermion.com
+
 jobs:
   build-and-publish:
     runs-on: ubuntu-latest
     steps:
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+      - uses: actions/checkout@v3
+      - name: Install npm packages
+        run: npm ci
+      - name: Generate nuxt files
+        run: npm run generate
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GH_MACHINE_TOKEN }}
           publish_dir: .output/public
+          cname: auth-playground.makefermion.com
