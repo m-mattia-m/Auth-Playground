@@ -23,8 +23,10 @@ jobs:
         run: npm run generate
 #      - name: Add & Commit
 #        uses: EndBug/add-and-commit@v9.1.4
-      - name: Commit report
+      - name: Set git config
         run: |
+          echo "Usernmae: $GH_USERNAME"
+          echo "Usernmae: $GH_EMAIL"
           git config --global user.name '$GH_USERNAME'
           git config --global user.email '$GH_EMAIL'
       - name: Publish
