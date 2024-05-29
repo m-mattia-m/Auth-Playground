@@ -27,4 +27,3 @@ jobs:
           github_token: ${{ secrets.GH_MACHINE_TOKEN }}
           publish_dir: .output/public
           cname: "$DOMAIN"
-        run: echo "$DOMAIN"
