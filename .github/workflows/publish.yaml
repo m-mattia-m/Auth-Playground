@@ -6,10 +6,6 @@ on:
       - created
 
 env:
-  TAG_NAME: ${{ github.event.release.tag_name }}
-  REPOSITORY_NAME: auth-playground
-  GH_USERNAME: m-mattia-m-machine
-  GH_EMAIL: gh@makefermion.com
   DOMAIN: auth-playground.makefermion.com
 
 jobs:
@@ -30,4 +26,4 @@ jobs:
         with:
           github_token: ${{ secrets.GH_MACHINE_TOKEN }}
           publish_dir: .output/public
-          cname: auth-playground.makefermion.com
+          cname: $DOMAIN
