@@ -20,19 +20,19 @@
         <div class="w-full sm:w-1/2 grid grid-cols-2 xs:grid-cols-4 sm:grid-cols-2 gap-12 sm:gap-6 place-content-stretch mt-8">
           <!-- bg-white p-2 w-12 h-12 xs:p-4 xs:w-16 xs:h-16 sm:p-8 sm:w-36 sm:h-36 rounded-md shadow-2xl shadow-gray-200 sm:place-self-end -->
           <div class="bg-white p-4 w-24 h-24 xs:p-2 xs:h-16 xs:w-16 sm:p-6 sm:w-32 sm:h-32 rounded-md shadow-2xl shadow-gray-200 sm:place-self-end">
-            <img src="~/public/providers/google.svg" alt="google">
+            <img src="/providers/google.svg" alt="google">
           </div>
           <!-- bg-white p-2 w-12 h-12 xs:p-4 xs:w-16 xs:h-16 sm:p-8 sm:w-36 sm:h-36 rounded-md shadow-2xl shadow-gray-200 -->
           <div class="bg-white p-4 w-24 h-24 xs:p-2 xs:h-16 xs:w-16 sm:p-6 sm:w-32 sm:h-32 rounded-md shadow-2xl shadow-gray-200 ">
-            <img src="~/public/providers/microsoft.svg" alt="microsoft">
+            <img src="/providers/microsoft.svg" alt="microsoft">
           </div>
           <!-- bg-white p-2 w-12 h-12 xs:p-4 xs:w-16 xs:h-16 sm:p-8 sm:w-36 sm:h-36 rounded-md shadow-2xl shadow-gray-200 sm:place-self-end flex items-center -->
           <div class="bg-white p-4 w-24 h-24 xs:p-2 xs:h-16 xs:w-16 sm:p-6 sm:w-32 sm:h-32 rounded-md shadow-2xl shadow-gray-200 sm:place-self-end flex items-center ">
-            <img src="~/public/providers/meta.svg" alt="meta">
+            <img src="/providers/meta.svg" alt="meta">
           </div>
           <!-- bg-white p-2 w-12 h-12 xs:p-4 xs:w-16 xs:h-16 sm:p-8 sm:w-36 sm:h-36 rounded-md shadow-2xl shadow-gray-200 -->
           <div class="bg-white p-4 w-24 h-24 xs:p-2 xs:h-16 xs:w-16 sm:p-6 sm:w-32 sm:h-32 rounded-md shadow-2xl shadow-gray-200 ">
-            <img src="~/public/providers/notion.svg" alt="notion">
+            <img src="/providers/notion.svg" alt="notion">
           </div>
         </div>
       </div>
