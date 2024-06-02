@@ -1,9 +1,8 @@
 <script setup lang="ts"></script>
 
 <template>
-<!--    <div class="">-->
-      <div class="min-h-screen -mt-28 -mb-20 flex flex-row items-center">
-        <div class="w-1/2">
+      <div class="min-h-screen flex flex-col justify-normal sm:justify-between sm:flex-row sm:items-center sm:-mt-28 sm:-mb-20">
+        <div>
           <h1 class="text-4xl text-gray-900 mb-2 font-bold">Auth Playground</h1>
           <h2 class="text-lg text-gray-600 mb-2">For OAuth 2.0 and OpenID Connect</h2>
 
@@ -17,24 +16,26 @@
           </div>
         </div>
 
-        <div class="w-1/2 grid grid-cols-2 gap-12 place-content-stretch">
-          <div class="bg-white p-8 w-36 h-36 place-self-end rounded-md  shadow-2xl shadow-gray-200">
+        <!-- w-full sm:w-1/2 grid grid-cols-4 sm:grid-cols-2 gap-12 sm:gap-6 place-content-stretch mt-8 sm:mt-0 -->
+        <div class="w-full sm:w-1/2 grid grid-cols-2 xs:grid-cols-4 sm:grid-cols-2 gap-12 sm:gap-6 place-content-stretch mt-8">
+          <!-- bg-white p-2 w-12 h-12 xs:p-4 xs:w-16 xs:h-16 sm:p-8 sm:w-36 sm:h-36 rounded-md shadow-2xl shadow-gray-200 sm:place-self-end -->
+          <div class="bg-white p-4 w-24 h-24 xs:p-2 xs:h-16 xs:w-16 sm:p-6 sm:w-32 sm:h-32 rounded-md shadow-2xl shadow-gray-200 sm:place-self-end">
             <img src="~/public/providers/google.svg" alt="google">
           </div>
-          <div class="bg-white p-8 w-36 h-36 rounded-md  shadow-2xl shadow-gray-200">
+          <!-- bg-white p-2 w-12 h-12 xs:p-4 xs:w-16 xs:h-16 sm:p-8 sm:w-36 sm:h-36 rounded-md shadow-2xl shadow-gray-200 -->
+          <div class="bg-white p-4 w-24 h-24 xs:p-2 xs:h-16 xs:w-16 sm:p-6 sm:w-32 sm:h-32 rounded-md shadow-2xl shadow-gray-200 ">
             <img src="~/public/providers/microsoft.svg" alt="microsoft">
           </div>
-          <div class="bg-white p-8 w-36 h-36 place-self-end rounded-md flex items-center  shadow-2xl shadow-gray-200">
+          <!-- bg-white p-2 w-12 h-12 xs:p-4 xs:w-16 xs:h-16 sm:p-8 sm:w-36 sm:h-36 rounded-md shadow-2xl shadow-gray-200 sm:place-self-end flex items-center -->
+          <div class="bg-white p-4 w-24 h-24 xs:p-2 xs:h-16 xs:w-16 sm:p-6 sm:w-32 sm:h-32 rounded-md shadow-2xl shadow-gray-200 sm:place-self-end flex items-center ">
             <img src="~/public/providers/meta.svg" alt="meta">
           </div>
-          <div class="bg-white p-8 w-36 h-36 rounded-md  shadow-2xl shadow-gray-200">
+          <!-- bg-white p-2 w-12 h-12 xs:p-4 xs:w-16 xs:h-16 sm:p-8 sm:w-36 sm:h-36 rounded-md shadow-2xl shadow-gray-200 -->
+          <div class="bg-white p-4 w-24 h-24 xs:p-2 xs:h-16 xs:w-16 sm:p-6 sm:w-32 sm:h-32 rounded-md shadow-2xl shadow-gray-200 ">
             <img src="~/public/providers/notion.svg" alt="notion">
           </div>
         </div>
       </div>
-<!--    </div>-->
 </template>
 
-<style scoped>
-
-</style>
+<style scoped lang="scss"></style>

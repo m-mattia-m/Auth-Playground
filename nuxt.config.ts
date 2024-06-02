@@ -4,7 +4,8 @@ export default defineNuxtConfig({
     head: {
       title: "Auth Playground",
       meta: [
-        { name: 'description', content: 'Test your OAuth 2.0 and OpenID Connect application. Generate your tokens for development without a working frontend.' }
+        { name: 'description', content: 'Test your OAuth 2.0 and OpenID Connect application. Generate your tokens for development without a working frontend.' },
+        { name: 'theme-color', content: '#fff' }
       ],
       charset: 'utf-8',
       viewport: 'width=device-width, initial-scale=1',
