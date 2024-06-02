@@ -1,10 +1,10 @@
 <script setup lang="ts">
 
 const credits = [
-  { name: 'Nuxt', description: 'Framework, Design kit', source: '_nuxt/public/credits/nuxt.svg', href: 'https://nuxt.com', bgColor: 'bg-green-100', borderColor: 'border-green-300' },
-  { name: 'Tailwind', description: 'Tailwind CSS, Tailwind UI', source: '_nuxt/public/credits/tailwindcss.svg', href: 'https://tailwindcss.com', bgColor: 'bg-blue-100', borderColor: 'border-blue-300' },
-  { name: 'SVG Repo', description: 'SVGs', source: '_nuxt/public/credits/svg-repo.svg', href: 'https://www.svgrepo.com', bgColor: 'bg-blue-100', borderColor: 'border-blue-300' },
-  { name: 'Zitadel', description: 'OIDC, OAuth2.0, Design Kit', source: '_nuxt/public/credits/zitadel-dark.svg', href: 'https://zitadel.com', bgColor: 'bg-pink-100', borderColor: 'border-pink-300' },
+  { name: 'Nuxt', description: 'Framework, Design kit', source: '~/public/credits/nuxt.svg', href: 'https://nuxt.com', bgColor: 'bg-green-100', borderColor: 'border-green-300' },
+  { name: 'Tailwind', description: 'Tailwind CSS, Tailwind UI', source: '~/public/credits/tailwindcss.svg', href: 'https://tailwindcss.com', bgColor: 'bg-blue-100', borderColor: 'border-blue-300' },
+  { name: 'SVG Repo', description: 'SVGs', source: '~/public/credits/svg-repo.svg', href: 'https://www.svgrepo.com', bgColor: 'bg-blue-100', borderColor: 'border-blue-300' },
+  { name: 'Zitadel', description: 'OIDC, OAuth2.0, Design Kit', source: '~/public/credits/zitadel-dark.svg', href: 'https://zitadel.com', bgColor: 'bg-pink-100', borderColor: 'border-pink-300' },
 ]
 
 </script>
