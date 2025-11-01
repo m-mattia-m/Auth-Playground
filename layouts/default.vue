@@ -91,7 +91,7 @@ function checkRouteUpdateLayout() {
               <span class="absolute -inset-1.5"/>
               <span class="sr-only">Github</span>
               <img class="h-8 w-8 my-[16px] rounded-full"
-                   src="~/public/github.svg"
+                   src="/public/github.svg"
                    alt="Github"/>
             </NuxtLink>
           </div>

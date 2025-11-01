@@ -21,6 +21,11 @@ const recentRequests = ref([] as OAuthRequestElement[])
 const dataMigrationTextarea = ref("")
 const responseCode = ref("")
 
+const authFlows = [
+  { id: 'pkce', title: 'PKCE' },
+]
+const selectedFlow = ref()
+
 onMounted(() => {
   dataMigrationTextarea.value = JSON.stringify(loadLocalStorage())
   loadTableData()
@@ -166,6 +171,27 @@ interface OAuthRequestElement {
 </script>
 
 <template>
+  <h1 class="text-4xl text-gray-900 mb-2">Authorization</h1>
+  <div>
+    <fieldset>
+      <p class="mt-1 text-sm leading-6 text-gray-600">Which flow do you want to use?</p>
+      <div class="mt-1 mb-1 space-y-6 sm:flex sm:items-center sm:space-x-10 sm:space-y-0">
+        <div v-for="flow in authFlows" :key="flow.id" class="flex items-center">
+          <input :id="flow.id" v-model="selectedFlow" v-bind:value="flow.id" name="notification-method" type="radio" class="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600" />
+          <label :for="flow.id" class="ml-3 block text-sm font-medium leading-6 text-gray-900">{{ flow.title }}</label>
+        </div>
+      </div>
+    </fieldset>
+  </div>
+
+  <div id="default-view" v-if="selectedFlow == '' || selectedFlow == null">
+    <p>Select your flow you want.</p>
+  </div>
+  <div id="pkce-view" v-if="selectedFlow == 'pkce'">
+    <p>PKCE</p>
+  </div>
+
+  <hr>
   <div>
 
     <h1 class="text-4xl text-gray-900 mb-2">URL generation</h1>
