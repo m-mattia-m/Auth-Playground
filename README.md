@@ -14,7 +14,7 @@ We would love ❤️ if you contribute 🧑‍💻 to this project. You can for 
 
 ## 1. Login
 
-1. Enter this URL: `https://zitadel.makefermion.dev/oauth/v2/authorize?response_type=code&client_id=268116337262395395@formtion&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Fapp%2Fcallback&scope=openid%20profile%20email%20offlice_access&code_challenge=reBXOTkUlHA3qY0gKogjPJHNPDZl5BRwY0cPne0WH-Y&code_challenge_method=S256`
+1. Enter this URL: `https://zitadel.domain.tld/oauth/v2/authorize?response_type=code&client_id=<client-id>&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Fapp%2Fcallback&scope=openid%20profile%20email%20offlice_access&code_challenge=<code-challenge>&code_challenge_method=S256`
 2. enter your user credentials (login with your user)
 3. Copy the code you got in your callback url
 
@@ -23,12 +23,12 @@ We would love ❤️ if you contribute 🧑‍💻 to this project. You can for 
 Run this curl to get your `id_token`:
 
 ```bash
-curl -X POST "https://zitadel.makefermion.dev/oauth/v2/token" \
+curl -X POST "https://zitadel.domain.tld/oauth/v2/token" \
     -H "Content-Type: application/x-www-form-urlencoded" \
     -d "grant_type=authorization_code" \
     -d "code=$AUTH_CODE" \
     -d "redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Fapp%2Fcallback" \
-    -d "client_id=268116337262395395@formtion" \
+    -d "client_id=<your-client-id>" \
     -d "code_verifier=ThisIsMyCodeChallenge123"
 ```
 
@@ -36,11 +36,11 @@ curl -X POST "https://zitadel.makefermion.dev/oauth/v2/token" \
 #!/bin/bash
 
 # Set your variables here
-CLIENT_ID="268116337262395395@formtion"
+CLIENT_ID="<your-client-id"
 REDIRECT_URI="http://localhost:3000/app/callback"
-AUTH_CODE="VeUStkA04lycTWkslpI7wqWcDVL7G0fhTV_GmOEZY69OYw"  # Replace with the actual authorization code
+AUTH_CODE="<your-auth-code>"  # Replace with the actual authorization code
 CODE_VERIFIER="ThisIsMyCodeChallenge123"  # Replace with your actual code verifier
-TOKEN_ENDPOINT="https://zitadel.makefermion.dev/oauth/v2/token"
+TOKEN_ENDPOINT="https://zitadel.domain.tld/oauth/v2/token"
 
 # Function to generate code_challenge from code_verifier
 generate_code_challenge() {
